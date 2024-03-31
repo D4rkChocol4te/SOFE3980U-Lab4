@@ -20,7 +20,7 @@
       helm repo add jenkinsci https://charts.jenkins.io
       helm repo update
       ```
-   4. Clone the repository for the Helm values.
+   4. Clone the repository for the Helm values...
       ```cmd
       cd ~
       git clone https://github.com/GeorgeDaoud3/SOFE3980U-Lab4.git
