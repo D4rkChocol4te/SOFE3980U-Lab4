@@ -1,53 +1,29 @@
 pipeline {
-    agent any
-    environment {
-        DOCKER_IMAGE = 'gcr.io/your-gcp-project-id/binary-calculator:$BUILD_NUMBER'
-        GCP_PROJECT_ID = 'your-gcp-project-id'
-        GKE_CLUSTER = 'your-cluster-name'
-        GKE_ZONE = 'your-cluster-zone'
+  agent any
+  tools {
+    maven 'maven' 
+  }
+  stages {
+    stage ('Init') {
+      steps {
+        sh 'echo "Start of Job"'
+        sh 'ls -la'
+      }
     }
-    tools {
-        maven 'maven' 
+    stage ('test') {
+      steps {
+        sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
+      }
     }
-    stages {
-        stage ('Init') {
-            steps {
-                sh 'echo "Start of Job"'
-                sh 'ls -la'
-            }
-        }
-        stage ('test') {
-            steps {
-                sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
-            }
-        }
-        stage ('build') {
-            steps {
-                sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
-            }
-        }
-        stage ('Build Docker Image') {
-            steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
-            }
-        }
-        stage ('Push Docker Image') {
-            steps {
-                script {
-                    sh "gcloud auth configure-docker"
-                    sh "docker push ${DOCKER_IMAGE}"
-                }
-            }
-        }
-        stage ('Deploy to GKE') {
-            steps {
-                script {
-                    sh "gcloud container clusters get-credentials ${GKE_CLUSTER} --zone ${GKE_ZONE} --project ${GCP_PROJECT_ID}"
-                    sh "kubectl set image deployment/binary-calculator binary-calculator=${DOCKER_IMAGE}"
-                }
-            }
-        }
+    stage ('build') {
+      steps {
+        sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
+      }
     }
+    stage ('Deploy') {
+      steps {
+        sh 'echo "bye bye"'
+      }
+    }
+  }
 }
